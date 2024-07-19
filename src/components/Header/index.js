@@ -1,38 +1,60 @@
-import React from 'react';
 import Icons from '../Icons';
 
-function Header() {
+import { useNavigate } from 'react-router-dom';
+
+const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            func(...args);
+        }, delay);
+    };
+};
+function Header({ notSearch = true }) {
+    const nav = useNavigate();
+    const onSearchChange = debounce((e) => {
+        nav(`/search/${e.target.value}`);
+    }, 600);
+
     return (
-        <header className="wrapper flex flex-row  items-center justify-between pt-4 px-2">
-            <div className="location-control flex flex-row text-3xl gap-2 hover:*:text-primary-color ">
-                <div className="back-button  cursor-pointer">
+        <header className="wrapper flex flex-row  items-center justify-between pt-4 px-2 sticky top-0 bg-secondary-bg pb-2">
+            <div className="control flex flex-row text-3xl gap-4 hover:*:text-primary-color items-center *:text-light-gray">
+                <div className="back-button cursor-pointer ">
                     <i className={Icons.back}></i>
                 </div>
                 <div className="return-button cursor-pointer">
                     <i className={Icons.return}></i>
                 </div>
-            </div>
-
-            {/* <div className="search-container  w-6/12  ">
-                <form action="" className="w-full flex flex-row overflow-hidden">
+                <div
+                    className={`w-full flex flex-row overflow-hidden relative group search-container min-w-96 text-sm z-50 
+                        ${notSearch && 'hidden'}`}
+                >
+                    <label
+                        htmlFor="search-input"
+                        className="rounded-full flex items-center justify-center w-10 text-light-gray 
+                        group-focus-within:text-white group-hover:text-white absolute top-2 left-2 cursor-pointer"
+                    >
+                        <i className="bx bx-search text-2xl"></i>
+                    </label>
                     <input
-                        className="rounded-full w-full   border-primary-bg  border-2 p-3 px-4 bg-gray focus:border-primary-color focus:outline-none"
+                        onChange={(e) => onSearchChange(e)}
+                        className="rounded-full w-full  border-gray border-2 p-3 px-12 group-focus-within:text-white group-hover:text-white
+                        bg-[#858585] focus:border-white focus:outline-none font-medium"
                         name="search-input"
                         id="search-input"
                     />
+                </div>
+            </div>
 
-                    <button className=" rounded-full flex items-center justify-center w-10 text-xl -m-10 hover:text-primary-color">
-                        {Icons.search}
-                    </button>
-                </form>
-            </div> */}
-
-            <div className="right-header flex flex-row gap-6 items-center *:rounded-full hover:*:scale-105 *:cursor-pointer hover:*:text-primary-color">
-                <div className="install h-10  flex items-center  bg-primary-bg p-4  text-base gap-1 ">
+            <div className="right-header flex flex-row gap-6 items-center *:rounded-full hover:*:scale-105 *:cursor-pointer hover:*:text-white">
+                <div className="install h-10  flex items-center  bg-teal p-4  text-base gap-1 ">
                     {Icons.install}
                     <span> Cài đặt Ứng dụng</span>
                 </div>
-                <div className="notification bg-primary-bg size-10 flex items-center justify-center text-2xl">
+                <div className="notification  bg-teal size-10 flex items-center justify-center text-2xl">
                     {Icons.noti}
                 </div>
                 <div className="user overflow-hidden size-10  ">

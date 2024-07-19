@@ -1,0 +1,43 @@
+{
+    "key": "DmokfwgHT58C",
+    "title": "Thuyền Không Bến Đợi",
+    "thumbnail": "https://avatar-ex-swe.nixcdn.com/song/2024/05/20/1/c/e/2/1716189958062_300.jpg",
+    "duration": "05:35",
+    "artists": [
+        {
+            "artistId": 261596,
+            "name": "Trungg I.U",
+            "shortLink": null,
+            "imageUrl": "https://avatar-ex-swe.nixcdn.com/singer/avatar/2018/04/26/1/7/8/2/1524750337571_300.jpg"
+        },
+        {
+            "artistId": 355898,
+            "name": "Czee",
+            "shortLink": "Czee",
+            "imageUrl": "https://avatar-ex-swe.nixcdn.com/singer/avatar/2023/02/20/c/8/c/2/1676863836833_300.jpg"
+        }
+    ],
+    "type": "SONG",
+    "dateRelease": 0,
+    "dateCreate": 0,
+    "uploadBy": null,
+    "provider": null,
+    "isMyPlaylist": false,
+    "statusViewValue": 1,
+    "statusPlayValue": 1,
+    "statusDownloadValue": 2,
+    "statusAddPlaylistValue": 0,
+    "refMapping": [],
+    "genreKey": "",
+    "streamUrls": [
+        {
+            "quality": "128",
+            "streamUrl": "https://stream.nixcdn.com/NhacCuaTui2051/ThuyenKhongBenDoi-TrunggIUVietNamCZEE-13594281.mp3?st=adtkGLCvW4J4Jj08QzAfNA&e=1721405437"
+        },
+        {
+            "quality": "320",
+            "streamUrl": ""
+        }
+    ],
+    "description": ""
+}

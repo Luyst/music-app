@@ -2,6 +2,7 @@ import { getSong } from 'nhaccuatui-api-full';
 import { useEffect, useRef, useState } from 'react';
 import Icons from '../Icons';
 
+const songDemo = require('./songdemo.json');
 const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
@@ -10,9 +11,8 @@ const formatTime = (seconds) => {
     const formattedSeconds = remainderSeconds < 10 ? `0${remainderSeconds}` : remainderSeconds;
     return `${formattedMinutes}:${formattedSeconds}`;
 };
-
 function Footer({ songID }) {
-    const [currentSong, setCurrentSong] = useState(null);
+    const [currentSong, setCurrentSong] = useState();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0); // State to manage current time
     const [progress, setProgress] = useState(0);
@@ -22,8 +22,12 @@ function Footer({ songID }) {
         const fetchSong = async () => {
             if (songID) {
                 const song = await getSong(songID);
-                setCurrentSong(song.song);
+                if (song.status === 'success') {
+                    setCurrentSong(song.song);
+                    return;
+                }
             }
+            setCurrentSong(songDemo);
         };
         fetchSong();
     }, [songID]);
@@ -72,46 +76,47 @@ function Footer({ songID }) {
             {currentSong && (
                 <>
                     <audio ref={audioRef} hidden controls>
-                        <source src={currentSong.streamUrls[1].streamUrl} />
+                        <source src={currentSong.streamUrls[0].streamUrl} />
                     </audio>
                     <div className="audio-player flex flex-row justify-start h-full  ">
-                        <div className="song-info flex flex-row gap-2 h-full min-w-52 items-center ">
-                            <img src={currentSong.thumbnail} alt="thumbnail" className="w-16 h-16 object-cover" />
+                        <div className="song-info flex flex-row gap-2 h-full min-w-64 items-center ">
+                            <img src={currentSong.thumbnail} alt="thumbnail" className="size-16 object-cover" />
                             <div className="info flex flex-col justify-center h-full">
                                 <div className="name-artist">{currentSong.artists[0].name}</div>
                                 <div className="name-song">{currentSong.title}</div>
                             </div>
                         </div>
                         <div className="audio-container flex flex-col justify-center items-center w-full ">
-                            <ul className="audio-control flex items-center gap-4 ">
+                            <ul className="audio-control flex items-center gap-4 hover:*:text-white">
                                 <li
-                                    className="prev-button text-4xl hover:text-primary-color  cursor-pointer "
+                                    className="prev-button text-4xl text-dark-gray   cursor-pointer "
                                     onClick={handlePrevious}
                                 >
                                     <i className={Icons.preButton}></i>
                                 </li>
                                 <li
-                                    className="play-pause-button text-5xl font-light hover:text-primary-color cursor-pointer"
+                                    className="play-pause-button text-5xl    cursor-pointer hover:scale-110 "
                                     onClick={handlePlayPause}
                                 >
                                     {isPlaying ? <i className={Icons.pause}></i> : <i className={Icons.play}></i>}
                                 </li>
                                 <li
-                                    className="next-button text-4xl hover:text-primary-color cursor-pointer"
+                                    className="next-button text-4xl text-dark-gray  cursor-pointer"
                                     onClick={handleNext}
                                 >
                                     <i className={Icons.nextButton}></i>
                                 </li>
                             </ul>
                             <ul className="duration-container flex items-center gap-4 w-full max-w-2xl">
-                                <li className="time-current">{formatTime(currentTime)}</li>
-                                <li className="duration-bar h-1 w-full bg-gray hover:*:bg-primary-color   rounded-full  cursor-pointer overflow-hidden">
+                                <li className="time-current text-xs">{formatTime(currentTime)}</li>
+                                <li className="flex flex-row items-center duration-bar h-1 w-full bg-gray group   rounded-full  ">
                                     <div
-                                        className="progress-bar bg-white h-full "
+                                        className="progress-bar bg-teal h-full rounded-full"
                                         style={{ width: `${progress}%` }}
                                     ></div>
+                                    <div className="size-3 bg-white rounded-full -m-1 hidden group-hover:block"></div>
                                 </li>
-                                <li className="duration-time">{currentSong.duration}</li>
+                                <li className="duration-time text-xs">{currentSong.duration}</li>
                             </ul>
                         </div>
                     </div>

@@ -10,7 +10,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-body{
+body {
     color: #fff;
     background-color: var(--bg-main);
 }
@@ -18,11 +18,22 @@ a {
     text-decoration: none;
 }
 
-::-webkit-scrollbar-track{
-    width: 5px;
+
+
+::-webkit-scrollbar {
+    width: 8px;
 }
-::-webkit-scrollbar-thumb{
-    width: 5px;
+
+::-webkit-scrollbar-track {
+    background: theme('colors.secondary-bg'); 
+    border-radius: 4px; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: theme('colors.dark-gray'); 
+    border-radius: 10px;
+    border: 2px solid transparent; /* Creates space around the thumb */
+    background-clip: content-box; /* Clips the thumb background to its content box */
 }
 
 /* .dark {
