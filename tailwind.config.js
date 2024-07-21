@@ -3,10 +3,15 @@ module.exports = {
     purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
     content: [],
     theme: {
-        extend: {},
+        extend: {
+            boxShadow: {
+                full: '0 50px 300px 50px rgba(0, 0, 0, 0.5)',
+            },
+        },
         colors: {
-            transparent: 'transparent',
+            transparent: 'rgba(255,255,255,0.1)',
             white: '#fff',
+
             black: '#001214',
             orange: '#FF8C00',
             'pastel-pink': '#FFC0CB',
@@ -24,6 +29,17 @@ module.exports = {
             'primary-bg': '#001214',
             'secondary-bg': '#061923',
             'footer-bg': '#0b1727',
+
+            'bg-1': '#6FAEAA',
+            'bg-2': '#3F7571',
+            'bg-3': '#6D887A',
+            'bg-4': '#BA9090',
+            'bg-5': '#A36A00',
+        },
+        screens: {
+            mb: { max: '760px' },
+
+            lg: { min: '761px' },
         },
     },
     plugins: [],

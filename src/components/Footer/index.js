@@ -1,127 +1,77 @@
-import { getSong } from 'nhaccuatui-api-full';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Icons from '../Icons';
+import { Link } from 'react-router-dom';
+import PlayBack from '../PlayBack';
+import Thumbnail from '../Thumbnail';
+import SongNav from '../SongNav';
+import { StreamContext } from '~/context/Streaming';
 
-const songDemo = require('./songdemo.json');
-const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
-    const remainderSeconds = Math.floor(seconds % 60);
-    const formattedSeconds = remainderSeconds < 10 ? `0${remainderSeconds}` : remainderSeconds;
-    return `${formattedMinutes}:${formattedSeconds}`;
-};
-function Footer({ songID }) {
-    const [currentSong, setCurrentSong] = useState();
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0); // State to manage current time
-    const [progress, setProgress] = useState(0);
-    const audioRef = useRef(null);
-
-    useEffect(() => {
-        const fetchSong = async () => {
-            if (songID) {
-                const song = await getSong(songID);
-                if (song.status === 'success') {
-                    setCurrentSong(song.song);
-                    return;
-                }
-            }
-            setCurrentSong(songDemo);
-        };
-        fetchSong();
-    }, [songID]);
-
-    useEffect(() => {
-        const audioElement = audioRef.current;
-
-        const handleTimeUpdate = () => {
-            setCurrentTime(audioElement.currentTime);
-            setProgress((audioElement.currentTime / audioElement.duration) * 100);
-        };
-
-        const handleEnded = () => {
-            // Logic for what happens when song ends (e.g., play next song)
-        };
-
-        if (audioElement) {
-            audioElement.addEventListener('timeupdate', handleTimeUpdate);
-            audioElement.addEventListener('ended', handleEnded);
-            return () => {
-                audioElement.removeEventListener('timeupdate', handleTimeUpdate);
-                audioElement.removeEventListener('ended', handleEnded);
-            };
-        }
-    }, [audioRef]);
-
-    const handlePlayPause = () => {
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play();
-        }
-        setIsPlaying(!isPlaying);
-    };
-
-    const handleNext = () => {
-        // Logic to handle next song
-    };
-
-    const handlePrevious = () => {
-        // Logic to handle previous song
-    };
+function Footer() {
+    const currentSong = useContext(StreamContext).currentStream;
 
     return (
-        <footer className="wrap w-full p-6 h-24 ">
+        <footer className="wrap  w-full p-3 mb:p-2 mb:fixed mb:bottom-0 mb:bg-secondary-bg  duration-300 ease-in-out">
             {currentSong && (
                 <>
-                    <audio ref={audioRef} hidden controls>
-                        <source src={currentSong.streamUrls[0].streamUrl} />
-                    </audio>
-                    <div className="audio-player flex flex-row justify-start h-full  ">
-                        <div className="song-info flex flex-row gap-2 h-full min-w-64 items-center ">
-                            <img src={currentSong.thumbnail} alt="thumbnail" className="size-16 object-cover" />
-                            <div className="info flex flex-col justify-center h-full">
-                                <div className="name-artist">{currentSong.artists[0].name}</div>
-                                <div className="name-song">{currentSong.title}</div>
-                            </div>
+                    <div className="audio-player-control flex flex-row justify-between items-center px-2 h-full w-full mb:h-12 rounded-lg mb:bg-primary-color  mb:px-2  duration-300 ease-in-out ">
+                        <div className="w-1/3">
+                            <Thumbnail item={currentSong} size="16" />
                         </div>
-                        <div className="audio-container flex flex-col justify-center items-center w-full ">
-                            <ul className="audio-control flex items-center gap-4 hover:*:text-white">
-                                <li
-                                    className="prev-button text-4xl text-dark-gray   cursor-pointer "
-                                    onClick={handlePrevious}
-                                >
-                                    <i className={Icons.preButton}></i>
-                                </li>
-                                <li
-                                    className="play-pause-button text-5xl    cursor-pointer hover:scale-110 "
-                                    onClick={handlePlayPause}
-                                >
-                                    {isPlaying ? <i className={Icons.pause}></i> : <i className={Icons.play}></i>}
-                                </li>
-                                <li
-                                    className="next-button text-4xl text-dark-gray  cursor-pointer"
-                                    onClick={handleNext}
-                                >
-                                    <i className={Icons.nextButton}></i>
-                                </li>
-                            </ul>
-                            <ul className="duration-container flex items-center gap-4 w-full max-w-2xl">
-                                <li className="time-current text-xs">{formatTime(currentTime)}</li>
-                                <li className="flex flex-row items-center duration-bar h-1 w-full bg-gray group   rounded-full  ">
-                                    <div
-                                        className="progress-bar bg-teal h-full rounded-full"
-                                        style={{ width: `${progress}%` }}
-                                    ></div>
-                                    <div className="size-3 bg-white rounded-full -m-1 hidden group-hover:block"></div>
-                                </li>
-                                <li className="duration-time text-xs">{currentSong.duration}</li>
-                            </ul>
+                        <div className="w-2/5">
+                            <PlayBack stream={currentSong} />
+                        </div>
+                        <div className=" w-1/3">
+                            <SongNav />
                         </div>
                     </div>
+                    {/* <div className="mobile play-button h-full ">
+                            <div
+                                className="play-pause-button text-3xl flex  justify-center items-center  h-full cursor-pointer hover:scale-110  "
+                                onClick={handlePlayPause}
+                            >
+                                {isPlaying ? <i className={Icons.pause}></i> : <i className={Icons.play}></i>}
+                            </div>
+                        </div> */}
+                    {/* <div
+                        className=" mobile flex flex-row items-center duration-bar h-0.5 w-full bg-gray group   rounded-full   "
+                        onClick={handleProgressBarClick}
+                    >
+                        <div
+                            className="progress-bar bg-teal h-full rounded-full"
+                            style={{ width: `${progress}%` }}
+                        ></div>
+                    </div> */}
                 </>
             )}
+
+            <div className="nav mobile duration-300 ease-in-out">
+                <ul className="sidebar-header flex flex-row p-4 justify-between rounded-lg h-full">
+                    <li>
+                        <Link to="/" className="hover:text-primary-color flex flex-col gap-2 items-center">
+                            {Icons.home}
+                            <span className="text-xs">Trang chủ</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/search" className="hover:text-primary-color flex flex-col gap-2 items-center">
+                            {Icons.search}
+                            <span className="text-xs">Tìm kiếm</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/" className="hover:text-primary-color flex flex-col gap-2 items-center">
+                            {Icons.home}
+                            <span className="text-xs">Trang chủ</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/search" className="hover:text-primary-color flex flex-col gap-2 items-center">
+                            {Icons.search}
+                            <span className="text-xs">Tìm kiếm</span>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
         </footer>
     );
 }

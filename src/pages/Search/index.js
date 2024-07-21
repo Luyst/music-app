@@ -7,9 +7,6 @@ import SongList from '~/components/SongList';
 import TopShow from '~/components/TopShow';
 import Icons from '~/components/Icons';
 
-const songInfo = require('./songdemo.json');
-const data = require('./datademo.json');
-
 function Search() {
     let { key } = useParams();
     const [songList, setSongList] = useState([]);
@@ -17,48 +14,49 @@ function Search() {
     const [firstSong, setFirstSong] = useState([]);
     const [error, setError] = useState(true);
 
-    // useEffect(() => {
-    //     const fetchFirstResul = async (songKey) => {
-    //         const songInfo = await nct.getSong(songKey);
-    //         if (songInfo.status === 'success') {
-    //             setFirstSong(songInfo.song);
-    //         }
-    //     };
-    //     const fetchHome = async () => {
-    //         const data = await nct.searchByKeyword(key);
+    const fetchFirstResul = async (songKey) => {
+        const songInfo = await nct.getSong(songKey);
+        if (songInfo.status === 'success') {
+            setFirstSong(songInfo.song);
+        }
+        setError(false);
 
-    //         console.log(data);
-    //         if (data.status === 'success') {
-    //             setPlayList(data.search.playlist);
-    //             setSongList(data.search.song);
-    //             console.log(songList);
-    //             fetchFirstResul(songList.song[0].key);
-    //             setError(false);
-    //             return;
-    //         }
-    //         setError(true);
-    //     };
-    //     fetchHome();
-    // }, [key]);
-    const fetchFirstResul = (songKey) => {
-        setFirstSong(songInfo.song);
+        console.log(firstSong);
     };
-
     useEffect(() => {
-        const fetchJson = async () => {
+        const fetchHome = async () => {
+            const data = await nct.searchByKeyword(key);
+
             if (data.status === 'success') {
                 setPlayList(data.search.playlist.playlist);
                 setSongList(data.search.song.song);
-                console.log(data.search.song.song[0].artists);
-                fetchFirstResul(data.search.song.song[0].key); // Corrected the path to access the first song key
-                setError(false);
-            } else {
-                setError(true);
-            }
-        };
 
-        fetchJson();
+                console.log(songList);
+                fetchFirstResul(data.search.song.song[0].key);
+                return;
+            }
+            setError(true);
+        };
+        fetchHome();
     }, [key]);
+    // const fetchFirstResul = (songKey) => {
+    //     setFirstSong(songInfo.song);
+    // };
+
+    // useEffect(() => {
+    //     const fetchJson = async () => {
+    //         if (data.status === 'success') {
+    //             setPlayList(data.search.playlist.playlist);
+    //             setSongList(data.search.song.song);
+    //             fetchFirstResul(data.search.song.song[0].key); // Corrected the path to access the first song key
+    //             setError(false);
+    //         } else {
+    //             setError(true);
+    //         }
+    //     };
+
+    //     fetchJson();
+    // }, [key]);
     return (
         <>
             <Header notSearch={false} />
@@ -86,7 +84,7 @@ function Search() {
                                     <img src={firstSong.thumbnail} alt="thumbnail" />
                                 </div>
                                 <div>
-                                    <div className="text-3xl font-bold">{firstSong.title}</div>
+                                    <div className="text-3xl font-bold w-4/5 truncate">{firstSong.title}</div>
                                     <div className="bottom flex flex-row gap-2 items-center text-sm text-light-gray">
                                         <div>Bài hát</div>
                                         <div className="">·</div>

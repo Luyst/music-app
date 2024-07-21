@@ -4,7 +4,7 @@ import Icons from '../Icons';
 
 function Sidebar() {
     return (
-        <aside className="wrapper flex flex-col  h-full w-1/4 gap-2 ">
+        <aside className="wrapper flex flex-col  h-full w-1/4 gap-2 mb:hidden ">
             <header>
                 <ul className="sidebar-header flex flex-col p-4 gap-4 bg-secondary-bg rounded-lg h-full">
                     <li>
@@ -12,6 +12,9 @@ function Sidebar() {
                             {Icons.home}
                             <span className="text-xl">Trang chủ</span>
                         </Link>
+                    </li>
+                    <li>
+                        {' '}
                         <Link to="/search" className="hover:text-primary-color flex flex-row gap-2 items-center">
                             {Icons.search}
                             <span className="text-xl">Tìm kiếm</span>

@@ -15,7 +15,6 @@ function Home() {
         const fetchHome = async () => {
             try {
                 const homeData = await nct.getHome();
-                console.log(homeData);
 
                 if (homeData.status === 'success') {
                     setTopSong(homeData.song);
@@ -34,7 +33,7 @@ function Home() {
     }, []);
 
     return (
-        <div className="wrap px-4">
+        <div className="wrap px-4 mb:px-2">
             <Header />
 
             {error ? (
@@ -48,6 +47,12 @@ function Home() {
                 </div>
             ) : (
                 <>
+                    <div className="hidden mb:flex flex-row py-4 justify-between pe-3">
+                        <div className="text-3xl font-bold">Xin chào !</div>
+                        <div>
+                            <i className="bx bx-cog text-3xl"></i>{' '}
+                        </div>
+                    </div>
                     <TopShow TopShow={newRelease} title="Nhạc mới nè !!" />
                     <TopShow TopShow={topSong} title="Nhạc hay lắm !!" />
 

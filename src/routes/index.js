@@ -6,7 +6,7 @@ import Search from '~/pages/Search';
 const config = {
     home: '/',
     playlist: '/playlist',
-    song: '/song',
+    song: '/song/:key',
     search: '/search',
     searchValue: '/search/:key',
 };
