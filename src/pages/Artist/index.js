@@ -1,58 +1,67 @@
-import nct from 'nhaccuatui-api-full';
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import nct from 'nhaccuatui-api-full'; // Import API
 
 import Header from '~/components/Header';
 import SongList from '~/components/SongList';
-import ButtonStream from '~/components/ButtonStream';
-import Thumbnail from '~/components/Thumbnail';
 import TopShow from '~/components/TopShow';
+import ButtonStream from '~/components/ButtonStream';
 import MyInfor from '~/components/MyInfor';
 
-const listColor = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5'];
+const listColor = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5', 'bg-6', 'bg-7', 'bg-8'];
 
-function PlayList() {
-    const { playlistKey } = useParams();
-    const [playList, setPlayList] = useState([]);
+function Artist() {
+    const { key } = useParams();
     const [song, setSong] = useState();
+    const [playList, setPlayList] = useState();
+    const [error, setError] = useState(false);
     const [theme, setTheme] = useState('');
-
-    const [error, setError] = useState(true);
+    const [artistDetails, setArtistDetails] = useState([]);
+    const [more, setMore] = useState([]);
     const [loading, setLoading] = useState(true);
-    const formatDate = (dateString) => {
-        const [day, month, year] = dateString.split('/');
 
-        return `${day} tháng ${month}, ${year}`;
-    };
+    function convertKey(str) {
+        if (!str) return null;
+        const withoutDiacritics = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        // Thay thế khoảng trắng bằng dấu gạch ngang
+        const result = withoutDiacritics.replace(/\s+/g, '-').toLowerCase();
+        return result;
+    }
+
     useEffect(() => {
-        const fetchPlayList = async (playlistKey) => {
+        const fetchArtistDetails = async (key) => {
             setLoading(true);
             try {
-                if (!playlistKey) return;
-                const playList = await nct.getPlaylistDetail(playlistKey);
-                console.log(playList);
-                if (playList.status === 'success') {
-                    setPlayList(playList.playlist);
-                    setSong(playList.playlist.songs);
+                if (!key) return;
+                const artistDetails = await nct.getArtistDetail(key);
+                const morePlaylist = await nct.explore({
+                    type: 'song', // or "playlist" or "mv"
+                });
+
+                if (artistDetails.status === 'success') {
+                    setArtistDetails(artistDetails.artist);
+                    setSong(artistDetails.song.song);
+                    artistDetails.playlist && setPlayList(artistDetails.playlist.playlist);
+                    setMore(morePlaylist.data);
                     setError(false);
-                    console.log(error);
                     return;
                 }
                 setError(true);
             } catch (error) {
-                console.error('Error fetching song details:', error);
+                console.error('Error fetching artist details:', error);
                 setError(true);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (!playList || playList.key !== playlistKey) {
-            fetchPlayList(playlistKey);
+        if (!artistDetails || convertKey(artistDetails.name) !== key) {
+            fetchArtistDetails(key);
             const color = listColor[Math.floor(Math.random() * listColor.length)];
             setTheme(color);
         }
-    }, [playlistKey]);
+    }, [key]);
+
     return (
         <div className="wrapper size-full ">
             <Header />
@@ -87,37 +96,27 @@ function PlayList() {
                     />
                 </div>
             ) : (
-                <div className="song-page flex flex-col gap-4">
-                    <div className={`background-cover  flex flex-row items-end  p-4 pt-20 ${theme} `}>
-                        <div className="song-detail flex flex-row gap-2 z-10">
-                            <div className="thumbnail-container flex items-end">
-                                <img className="rounded-md  object-contain" src={playList.thumbnail} alt="thumbnail" />
+                <div className={`artist-page flex flex-col gap-4  w-full `}>
+                    <div
+                        className={` flex flex-col justify-end min-h-80  bg-cover bg-no-repeat  ${theme}`}
+                        style={{ backgroundImage: `url(${artistDetails.coverImageURL})` }}
+                    >
+                        <div className="artist-details flex flex-col items-start p-4 pt-20 z-30">
+                            <div className="flex flex-row font-bold items-center ">
+                                <i className="bx bxs-user-check me-2 text-2xl size-8 flex justify-center items-center bg-light-blue rounded-full"></i>{' '}
+                                {artistDetails.role.map((role, index) => (
+                                    <React.Fragment key={index}>
+                                        <div>{role}</div>
+                                        {index < artistDetails.role.length - 1 && <div className="me-2">,</div>}
+                                    </React.Fragment>
+                                ))}
                             </div>
-                            <div className="song-infor flex flex-col font-extrabold ps-3 justify-end">
-                                <div className="text-sm">{playList.type === 'SONG' ? 'Bài hát' : 'PlayList'}</div>
-                                <div
-                                    className="text -ms-1 cursor-default text-left mb-5"
-                                    style={{ fontSize: `${playList.title.length > 30 ? '3rem' : '6rem'}` }}
-                                >
-                                    {playList.title}
-                                </div>
-                                <div className="more-info flex flex-row text-sm gap-2 items-center">
-                                    <div className="ava-artist">
-                                        <img
-                                            className="size-8 rounded-full"
-                                            src={playList.artists[0].imageUrl}
-                                            alt=""
-                                        />
-                                    </div>
-                                    <Link to={`/artist/${playList.artists[0].shortLink}`}>
-                                        <div className="main-artist">{playList.artists[0].name}</div>
-                                    </Link>
-                                </div>
-                            </div>
+                            <div className="text-6xl font-extrabold mt-4">{artistDetails.name}</div>
+                            <div className="text-lg mt-2">{artistDetails.description}</div>
                         </div>
                     </div>
                     <div className="controler flex flex-row gap-4 px-4">
-                        <ButtonStream song={song[0]} size={14} />
+                        <ButtonStream song={song} size={14} />
                         <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white hover:scale-110">
                             <i className="bx bx-plus-circle text-4xl"></i>{' '}
                         </div>
@@ -125,21 +124,21 @@ function PlayList() {
                             <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
                         </div>
                     </div>
-                    <div className="song-container  flex flex-row justify-between mx-2 pe-4 items-center  h-14 text-light-gray border-b border-b-dark-gray">
-                        <div className="left-container flex flex-row gap-2 items-center">
-                            <div className="text-light-gray font-semibold px-3 text-md">#</div>
-                            <div>Tiêu đề</div>
+                    <div className="artist-songs p-2">
+                        <div className="p-4 text-2xl font-bold">Phổ biến</div>
+                        <SongList songList={song} numList={true} />
+                    </div>
+                    {playList && (
+                        <div className="artist-playlist">
+                            <div className="p-4 text-2xl font-bold">Danh sách phát nhạc</div>
+                            <TopShow TopShow={playList} />
                         </div>
+                    )}
+                    <div className="artist-playlist">
+                        <div className="p-4 text-2xl font-bold">Mọi người cũng nghe</div>
+                        <SongList songList={more.slice(0, 5)} numList={true} />
+                    </div>
 
-                        <div className="duration text-2xl">
-                            <i className="bx bx-time"></i>
-                        </div>
-                    </div>
-                    <SongList songList={song} numList={true} />
-                    <div className="more-infor text-light-gray text-xs p-4">
-                        <div>{formatDate(playList.dateModify)}</div>
-                        <div>{playList.uploadBy.fullName}</div>
-                    </div>
                     <MyInfor />
                 </div>
             )}
@@ -147,4 +146,4 @@ function PlayList() {
     );
 }
 
-export default PlayList;
+export default Artist;

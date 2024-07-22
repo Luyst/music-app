@@ -18,20 +18,27 @@ body {
 a {
     text-decoration: none;
 }
-
+.underline-hover:hover{
+    text-decoration: underline;
+    color: white;
+}
 .bg-1 {
     background-color: #6FAEAA;
     box-shadow: 0 50px 300px 50px rgba(111, 174, 165, 0.5); 
 }
 
+
+
 .bg-2 {
-    background-color: #3F7571;
-    box-shadow: 0 50px 300px 50px rgba(63, 117, 113, 0.5); 
+    background: rgb(38,11,46);
+    background: linear-gradient(90deg, rgba(38,11,46,1) 43%, rgba(67,33,98,1) 100%);
+        box-shadow: 0 50px 300px 50px rgba(67,33,98,0.8); 
 }
 
 .bg-3 {
-    background-color: #6D887A;
-    box-shadow: 0 50px 300px 50px rgba(109, 136, 122, 0.5); 
+    background: rgb(22,83,47);
+background: linear-gradient(73deg, rgba(22,83,47,1) 32%, rgba(32,51,82,1) 81%);
+    box-shadow: 0 50px 300px 50px rgba(22,83,47 0.5); 
 }
 
 .bg-4 {
@@ -44,10 +51,25 @@ a {
     box-shadow: 0 50px 300px 50px rgba(163, 106, 0, 0.5); 
 }
 
+.bg-6 {
+    background-color: #c09ba1;
+    box-shadow: 0 50px 300px 50px rgba(192, 155, 161, 0.5); 
+}
+
+.bg-7 {
+    background-color: #402e7b;
+    box-shadow: 0 50px 300px 50px rgba(64, 46, 123, 0.5); 
+}
+
+.bg-8 {
+    background-color: #686f68;
+    box-shadow: 0 50px 300px 50px rgba(104, 111, 104, 0.5); 
+}
+
 
 ::-webkit-scrollbar {
     width: 6px;
-    height: 2px;
+    height: 0px;
 
 
 }
@@ -84,3 +106,47 @@ a {
 .bg-main {
     background-color: var(--bg-main);
 } */
+
+
+/*spin */
+
+.lds-ring,
+.lds-ring div {
+  box-sizing: border-box;
+}
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid currentColor;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: currentColor transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

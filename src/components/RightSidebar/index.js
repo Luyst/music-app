@@ -1,28 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { StreamContext } from '~/context/Streaming';
+import StreamSong from '~/components/StreamSong';
+import StreamPlayList from '~/components/StreamPlayList';
+import StreamLyric from '~/components/StreamLyric';
 
-function Sidebar() {
+function RightSidebar() {
+    const display = useContext(StreamContext).rightSidebar;
     return (
-        <aside className="flex flex-col ps-6 pt-2 min-w-40 bg-secondary-bg">
-            <Link to="/" className=" flex flex-row logo-container pb-5">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="46"
-                    height="46"
-                    viewBox="0 0 24 24"
-                    style={{ fill: 'rgba(255,255,255, 1)' }}
-                >
-                    <path d="M17.68 5.47H22V8h-4.32zM17.68 8.98H22v2.53h-4.32zM17.68 12.49H22v2.53h-4.32zM2 16h4.32v2.53H2zM7.22 16h4.32v2.53H7.22zM12.45 16h4.32v2.53h-4.32zM17.68 16H22v2.53h-4.32zM12.45 12.49h4.32v2.53h-4.32zM7.22 12.49h4.32v2.53H7.22zM7.22 8.98h4.32v2.53H7.22z"></path>
-                </svg>
-            </Link>
-
-            <nav className="flex flex-col ">
-                <ul>
-                    <li>Trang chu</li>
-                </ul>
-            </nav>
+        <aside
+            className={`flex flex-col p-4 pt-2  min-w-80 bg-secondary-bg  overflow-scroll mb:hidden md:hidden ${
+                display === 'hidden' && 'hidden'
+            }`}
+        >
+            {display === 'StreamSong' && <StreamSong />}
+            {display === 'PlayList' && <StreamPlayList />}
+            {display === 'StreamLyric' && <StreamLyric />}
         </aside>
     );
 }
 
-export default Sidebar;
+export default RightSidebar;

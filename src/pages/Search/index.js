@@ -1,66 +1,75 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import nct from 'nhaccuatui-api-full';
 
 import Header from '~/components/Header';
 import SongList from '~/components/SongList';
 import TopShow from '~/components/TopShow';
-import Icons from '~/components/Icons';
+import TopicShow from './TopicShow';
+import MyInfor from '~/components/MyInfor';
+import ButtonStream from '~/components/ButtonStream';
 
 function Search() {
     let { key } = useParams();
     const [songList, setSongList] = useState([]);
     const [playList, setPlayList] = useState([]);
-    const [firstSong, setFirstSong] = useState([]);
+    const [firstSong, setFirstSong] = useState();
     const [error, setError] = useState(true);
+    const [loading, setLoading] = useState(true);
 
-    const fetchFirstResul = async (songKey) => {
-        const songInfo = await nct.getSong(songKey);
-        if (songInfo.status === 'success') {
-            setFirstSong(songInfo.song);
-        }
-        setError(false);
+    const [topKey, setTopKey] = useState();
+    const [topic, setTopic] = useState();
 
-        console.log(firstSong);
-    };
     useEffect(() => {
-        const fetchHome = async () => {
+        setLoading(true);
+        const fetchSearch = async (key) => {
             const data = await nct.searchByKeyword(key);
 
             if (data.status === 'success') {
                 setPlayList(data.search.playlist.playlist);
                 setSongList(data.search.song.song);
 
-                console.log(songList);
-                fetchFirstResul(data.search.song.song[0].key);
+                setFirstSong(data.search.song.song[0]);
+                setLoading(false);
+                setError(false);
                 return;
             }
+            setLoading(false);
             setError(true);
         };
-        fetchHome();
+        const fetchNoSearch = async () => {
+            const data = await nct.getTopKeyword();
+            const topic = await nct.getTopics();
+
+            if (data.status === 'success' && topic.status === 'success') {
+                setTopic(topic);
+                setTopKey(data.topkeyword);
+                setError(false);
+                setLoading(false);
+                return;
+            }
+            setLoading(false);
+            setError(true);
+        };
+        if (key) {
+            fetchSearch(key);
+        } else {
+            fetchNoSearch();
+        }
     }, [key]);
-    // const fetchFirstResul = (songKey) => {
-    //     setFirstSong(songInfo.song);
-    // };
-
-    // useEffect(() => {
-    //     const fetchJson = async () => {
-    //         if (data.status === 'success') {
-    //             setPlayList(data.search.playlist.playlist);
-    //             setSongList(data.search.song.song);
-    //             fetchFirstResul(data.search.song.song[0].key); // Corrected the path to access the first song key
-    //             setError(false);
-    //         } else {
-    //             setError(true);
-    //         }
-    //     };
-
-    //     fetchJson();
-    // }, [key]);
     return (
         <>
             <Header notSearch={false} />
-            {error ? (
+            {loading ? (
+                <div className="flex justify-center items-center">
+                    <div className="lds-ring">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            ) : error ? (
                 <>
                     <div className="w-full flex flex-col text-xl justify-center items-center gap-3">
                         <img
@@ -71,45 +80,48 @@ function Search() {
                         {error}
                     </div>
                 </>
-            ) : (
+            ) : key ? (
                 <main className="body flex flex-col gap-4 px-3 pt-5">
                     <div className="first-result flex flex-row gap-3 w-full  ">
                         <div className="result  w-1/2 h-full">
                             <div className="text-2xl font-bold mb-3">Kết quả hàng đầu</div>
                             <div
                                 className="relative container-card bg-primary-color p-6 rounded-lg h-56 flex flex-col justify-center gap-4 overflow-hidden
-                                            hover:bg-secondary-color group cursor-pointer duration-500"
+                                                hover:bg-secondary-color group cursor-pointer duration-500"
                             >
-                                <div className="thumbnail size-24 rounded-lg overflow-hidden group-hover:shadow-lg  group-hover:shadow-black duration-500">
-                                    <img src={firstSong.thumbnail} alt="thumbnail" />
-                                </div>
-                                <div>
-                                    <div className="text-3xl font-bold w-4/5 truncate">{firstSong.title}</div>
-                                    <div className="bottom flex flex-row gap-2 items-center text-sm text-light-gray">
-                                        <div>Bài hát</div>
-                                        <div className="">·</div>
-                                        <div className="artist-list flex flex-row  w-ful">
-                                            {firstSong.artists.map((artist) => (
-                                                <>
-                                                    <Link
-                                                        to={`/artist/${artist.shortLink}`}
-                                                        className="font-semibold  hover:underline"
-                                                    >
-                                                        {artist.name}
-                                                    </Link>
-                                                    <h4 className="me-2">,</h4>
-                                                </>
-                                            ))}
+                                {firstSong && (
+                                    <div>
+                                        <div className="thumbnail size-24 rounded-lg overflow-hidden group-hover:shadow-lg  group-hover:shadow-black duration-500">
+                                            <img src={firstSong.thumbnail} alt="thumbnail" />
+                                        </div>
+                                        <div>
+                                            <div className="text-3xl font-bold w-4/5 truncate">{firstSong.title}</div>
+                                            <div className="bottom flex flex-row gap-2 items-center text-sm text-light-gray">
+                                                <div>Bài hát</div>
+                                                <div className="">·</div>
+                                                <div className="artist-list flex flex-row  w-ful">
+                                                    {firstSong.artists.map((artist) => (
+                                                        <React.Fragment key={artist.artistId}>
+                                                            <Link
+                                                                to={`/artist/${artist.shortLink}`}
+                                                                className="font-semibold  hover:underline"
+                                                            >
+                                                                {artist.name}
+                                                            </Link>
+                                                            <h4 className="me-2">,</h4>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className=" flex justify-center items-center absolute right-5 bottom-6 size-12 translate-y-28  group-hover:translate-y-0
+                                                    duration-500 ease-in-out rounded-full bg-teal hover:scale-110"
+                                        >
+                                            <ButtonStream song={firstSong} />
                                         </div>
                                     </div>
-                                </div>
-
-                                <div
-                                    className=" flex justify-center items-center absolute right-5 bottom-6 size-12 translate-y-28  group-hover:translate-y-0 
-                                                duration-500 ease-in-out rounded-full bg-teal hover:scale-110"
-                                >
-                                    <i class="bx bx-play text-4xl   "></i>{' '}
-                                </div>
+                                )}
                             </div>
                         </div>
                         <div className="related-result w-full overflow-hidden   ">
@@ -123,7 +135,29 @@ function Search() {
                     <TopShow TopShow={songList} title="Bài hát" />
                     <TopShow TopShow={playList} title="PlayList" />
                 </main>
+            ) : (
+                <div className="no-search w-full p-4 flex flex-col gap-6">
+                    <div className="top-key-search  flex flex-col gap-2">
+                        <div className="text-2xl font-bold mb-6">Mọi người quan tâm</div>
+                        {topKey.map((key) => (
+                            <Link
+                                to={`/search/${key.name}`}
+                                key={key.order}
+                                className="flex flex-row items-center bg-transparent p-2 mb-2 rounded-lg hover:text-light-blue hover:bg-dark-gray"
+                                style={{ width: 'auto' }}
+                            >
+                                <div className="mr-2 text-light-blue">#{key.order}</div>
+                                <div className="">{key.name}</div>
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="explore">
+                        <div className="text-2xl font-bold mb-6 ">Chủ đề phổ biến</div>
+                        <TopicShow topic={topic.topic} />
+                    </div>
+                </div>
             )}
+            <MyInfor />
         </>
     );
 }

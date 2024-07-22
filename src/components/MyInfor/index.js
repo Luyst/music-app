@@ -1,7 +1,7 @@
 import './MyInfor.scss';
 function MyInfor() {
     return (
-        <div className="wrapper flex flex-row justify-between mx-6 py-4 border-t-2  border-dark-gray">
+        <div className="wrapper flex flex-row justify-between mx-6 py-4 mt-20 border-t-2  border-dark-gray">
             <div className="*:p-1">
                 <div>Trang web được clone bởi: Luyst</div>
 
@@ -11,7 +11,7 @@ function MyInfor() {
                         target="__blank"
                         className="phone button-container flex items-center   bg-white w-56"
                     >
-                        <i class="bx bxs-phone size-10 p-3 font-bold rounded-full flex items-center justify-center text-xl bg-secondary-color"></i>
+                        <i className="bx bxs-phone size-10 p-3 font-bold rounded-full flex items-center justify-center text-xl bg-secondary-color"></i>
                         <span className="flex justify-center span-phone  font-semibold pe-2  text-secondary-color w-32">
                             0905 067 717
                         </span>

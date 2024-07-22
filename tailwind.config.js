@@ -29,17 +29,11 @@ module.exports = {
             'primary-bg': '#001214',
             'secondary-bg': '#061923',
             'footer-bg': '#0b1727',
-
-            'bg-1': '#6FAEAA',
-            'bg-2': '#3F7571',
-            'bg-3': '#6D887A',
-            'bg-4': '#BA9090',
-            'bg-5': '#A36A00',
         },
         screens: {
             mb: { max: '760px' },
 
-            lg: { min: '761px' },
+            md: { min: '761px', max: '1200px' },
         },
     },
     plugins: [],

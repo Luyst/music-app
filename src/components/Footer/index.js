@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext } from 'react';
 import Icons from '../Icons';
 import { Link } from 'react-router-dom';
 import PlayBack from '../PlayBack';
@@ -6,7 +6,7 @@ import Thumbnail from '../Thumbnail';
 import SongNav from '../SongNav';
 import { StreamContext } from '~/context/Streaming';
 
-function Footer() {
+function Footer({ audio }) {
     const currentSong = useContext(StreamContext).currentStream;
 
     return (
@@ -14,14 +14,14 @@ function Footer() {
             {currentSong && (
                 <>
                     <div className="audio-player-control flex flex-row justify-between items-center px-2 h-full w-full mb:h-12 rounded-lg mb:bg-primary-color  mb:px-2  duration-300 ease-in-out ">
-                        <div className="w-1/3">
-                            <Thumbnail item={currentSong} size="16" />
+                        <div className="w-1/3 mb:w-full">
+                            <Thumbnail item={currentSong} size={16} />
                         </div>
-                        <div className="w-2/5">
-                            <PlayBack stream={currentSong} />
+                        <div className="w-2/5 mb:hidden ">
+                            <PlayBack stream={currentSong} audioRef={audio} />
                         </div>
-                        <div className=" w-1/3">
-                            <SongNav />
+                        <div className=" w-1/3 mb:hidden ">
+                            <SongNav audioRef={audio} />
                         </div>
                     </div>
                     {/* <div className="mobile play-button h-full ">
