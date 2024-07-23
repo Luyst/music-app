@@ -1,0 +1,17 @@
+.music-wave {
+    position: relative;
+    overflow: hidden; /* Đảm bảo các phần tử con không ra ngoài phần tử cha */
+
+    .line.delay-200 {
+        animation-delay: 0.2s;
+    }
+    .line.delay-300 {
+        animation-delay: 0.3s;
+    }
+    .line.delay-100 {
+        animation-delay: 0.1s;
+    }
+    .line.delay-500 {
+        animation-delay: 0.5s;
+    }
+}

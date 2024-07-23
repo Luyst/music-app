@@ -31,12 +31,10 @@ function PlayBack({ stream, audioRef }) {
 
         const handlePlay = () => {
             setIsPlaying(true);
-            console.log('Audio is playing');
         };
 
         const handlePause = () => {
             setIsPlaying(false);
-            console.log('Audio is paused');
         };
 
         // Add event listeners

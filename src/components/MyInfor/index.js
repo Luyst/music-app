@@ -1,7 +1,7 @@
 import './MyInfor.scss';
 function MyInfor() {
     return (
-        <div className="wrapper flex flex-row justify-between mx-6 py-4 mt-20 border-t-2  border-dark-gray">
+        <div className="wrapper flex flex-row justify-between mx-2 py-4 px-2 mt-20 border-t-2  border-dark-gray">
             <div className="*:p-1">
                 <div>Trang web được clone bởi: Luyst</div>
 

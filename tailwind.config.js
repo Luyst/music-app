@@ -7,6 +7,19 @@ module.exports = {
             boxShadow: {
                 full: '0 50px 300px 50px rgba(0, 0, 0, 0.5)',
             },
+            keyframes: {
+                wave: {
+                    '0%,100%': {
+                        height: '4px;',
+                    },
+                    '50%': {
+                        height: '20px;',
+                    },
+                },
+            },
+            animation: {
+                wave: 'wave 1s ease-in-out infinite;',
+            },
         },
         colors: {
             transparent: 'rgba(255,255,255,0.1)',

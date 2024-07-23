@@ -23,7 +23,6 @@ function Artist() {
     function convertKey(str) {
         if (!str) return null;
         const withoutDiacritics = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        // Thay thế khoảng trắng bằng dấu gạch ngang
         const result = withoutDiacritics.replace(/\s+/g, '-').toLowerCase();
         return result;
     }
@@ -56,6 +55,7 @@ function Artist() {
         };
 
         if (!artistDetails || convertKey(artistDetails.name) !== key) {
+            console.log(convertKey(artistDetails.name));
             fetchArtistDetails(key);
             const color = listColor[Math.floor(Math.random() * listColor.length)];
             setTheme(color);
@@ -98,11 +98,16 @@ function Artist() {
             ) : (
                 <div className={`artist-page flex flex-col gap-4  w-full `}>
                     <div
-                        className={` flex flex-col justify-end min-h-80  bg-cover bg-no-repeat  ${theme}`}
-                        style={{ backgroundImage: `url(${artistDetails.coverImageURL})` }}
+                        className={`flex flex-col relative justify-center items-center bg-cover  bg-no-repeat mb:min-h-80 ${theme} mb:bg-none`}
                     >
-                        <div className="artist-details flex flex-col items-start p-4 pt-20 z-30">
-                            <div className="flex flex-row font-bold items-center ">
+                        <img
+                            src={artistDetails.imageUrl}
+                            alt="avatar"
+                            className="aspect-square w-2/5  hidden  rounded-full mb:block"
+                        />
+                        <img src={artistDetails.coverImageURL} alt="background" className="mb:hidden" />
+                        <div className="absolute artist-details flex flex-col items-start bottom-0 left-0 p-4 z-30  ">
+                            <div className="flex flex-row font-bold items-center mb:hidden">
                                 <i className="bx bxs-user-check me-2 text-2xl size-8 flex justify-center items-center bg-light-blue rounded-full"></i>{' '}
                                 {artistDetails.role.map((role, index) => (
                                     <React.Fragment key={index}>
@@ -111,17 +116,24 @@ function Artist() {
                                     </React.Fragment>
                                 ))}
                             </div>
-                            <div className="text-6xl font-extrabold mt-4">{artistDetails.name}</div>
+                            <div className="text-6xl font-extrabold mt-4 mb:text-3xl mb:font-bold">
+                                {artistDetails.name}
+                            </div>
                             <div className="text-lg mt-2">{artistDetails.description}</div>
                         </div>
                     </div>
-                    <div className="controler flex flex-row gap-4 px-4">
-                        <ButtonStream song={song} size={14} />
-                        <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white hover:scale-110">
-                            <i className="bx bx-plus-circle text-4xl"></i>{' '}
+                    <div className="controler  px-4 flex flex-row justify-between items-center  ">
+                        <div className="left-button">
+                            <div className="follow-button text-xl border border-dark-gray rounded-full px-5 py-2 hover:border-white hover:scale-105 font-bold">
+                                Theo dõi
+                            </div>
                         </div>
-                        <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white  hover:scale-110">
-                            <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
+                        <div className="right-button flex flex-row gap-4">
+                            <ButtonStream song={song[0]} size={14} />
+
+                            <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white  hover:scale-110">
+                                <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
+                            </div>
                         </div>
                     </div>
                     <div className="artist-songs p-2">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ButtonStream from '../ButtonStream';
 
 function TopShow({ TopShow, title }) {
     const [hidden, setHidden] = useState(true);
@@ -36,7 +37,11 @@ function TopShow({ TopShow, title }) {
                                     className=" flex justify-center items-center absolute right-3 bottom-3 size-12 translate-y-28  group-hover:translate-y-0 
                     duration-500 ease-in-out rounded-full bg-teal hover:scale-110"
                                 >
-                                    <i className="bx bx-play text-4xl   "></i>
+                                    {item.type === 'SONG' ? (
+                                        <ButtonStream song={item} />
+                                    ) : (
+                                        <i className="bx bx-play text-4xl   "></i>
+                                    )}
                                 </div>
                             </div>
                             <div className="title text-sm truncate w-40">{item.title}</div>
