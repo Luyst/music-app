@@ -2,30 +2,37 @@ import { useContext, useEffect, useState } from 'react';
 import { StreamContext } from '~/context/Streaming';
 import nct from 'nhaccuatui-api-full';
 
-function ButtonStream({ song, size }) {
-    const { setStream, currentStream, audioRef } = useContext(StreamContext);
+function ButtonStream({ song, size, playList }) {
+    const { setStream, currentStream, audioRef, setPlayList } = useContext(StreamContext);
     const [isPlaying, setIsPlaying] = useState(false);
     const s = size * 4 + 'px';
 
     const playPause = async (keysong) => {
-        if (currentStream.key !== song.key) {
+        if (!currentStream || currentStream.key !== song.key) {
             try {
                 const fetchStream = await nct.getSong(keysong);
                 if (fetchStream.status === 'success') {
                     localStorage.setItem('streaming', JSON.stringify(song));
-                    console.log(song);
                     setStream(song);
                 }
             } catch (error) {
                 console.error('Error fetching song:', error);
             }
         }
-        if (audioRef.current.paused) {
-            audioRef.current.play();
-            setIsPlaying(true);
-        } else {
-            audioRef.current.pause();
-            setIsPlaying(false);
+        if (playList) {
+            const keys = playList.map((s) => (s = s.key));
+            localStorage.setItem('playlist', JSON.stringify(keys));
+            localStorage.setItem('playlistShow', JSON.stringify(playList));
+            setPlayList(keys);
+        }
+        if (audioRef.current) {
+            if (audioRef.current.paused) {
+                audioRef.current.play();
+                setIsPlaying(true);
+            } else {
+                audioRef.current.pause();
+                setIsPlaying(false);
+            }
         }
     };
     useEffect(() => {
@@ -50,9 +57,9 @@ function ButtonStream({ song, size }) {
                 audioElement.removeEventListener('pause', handlePause);
             }
         };
-    }, [audioRef]);
+    }, [audioRef, currentStream]);
     useEffect(() => {
-        if (currentStream.key === song.key) {
+        if (currentStream && currentStream.key === song.key) {
             if (!audioRef.current.paused) {
                 setIsPlaying(true);
             }
@@ -62,7 +69,7 @@ function ButtonStream({ song, size }) {
     return (
         <div
             key={song.key}
-            className={`flex justify-center items-center rounded-full    bg-teal hover:scale-110`}
+            className={`flex justify-center items-center rounded-full    bg-teal hover:scale-105    `}
             style={{ height: s, width: s }}
             onClick={() => playPause(song.key)}
         >

@@ -5,18 +5,18 @@ import { Link, useParams } from 'react-router-dom';
 import Header from '~/components/Header';
 import SongList from '~/components/SongList';
 import ButtonStream from '~/components/ButtonStream';
-import Thumbnail from '~/components/Thumbnail';
-import TopShow from '~/components/TopShow';
-import MyInfor from '~/components/MyInfor';
 
-const listColor = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5'];
+import MyInfor from '~/components/MyInfor';
+import Tooltip from '~/components/Tooltip';
+
+const listColor = ['bg-1', 'bg-2', 'bg-4', 'bg-5', 'bg-6', 'bg-8', 'bg-7'];
 
 function PlayList() {
     const { playlistKey } = useParams();
     const [playList, setPlayList] = useState([]);
     const [song, setSong] = useState();
-    const [theme, setTheme] = useState('');
 
+    const [theme, setTheme] = useState('');
     const [error, setError] = useState(true);
     const [loading, setLoading] = useState(true);
     const formatDate = (dateString) => {
@@ -30,12 +30,11 @@ function PlayList() {
             try {
                 if (!playlistKey) return;
                 const playList = await nct.getPlaylistDetail(playlistKey);
-                console.log(playList);
                 if (playList.status === 'success') {
                     setPlayList(playList.playlist);
                     setSong(playList.playlist.songs);
+
                     setError(false);
-                    console.log(error);
                     return;
                 }
                 setError(true);
@@ -52,7 +51,7 @@ function PlayList() {
             const color = listColor[Math.floor(Math.random() * listColor.length)];
             setTheme(color);
         }
-    }, [playlistKey]);
+    }, [playlistKey, playList]);
     return (
         <div className="wrapper size-full ">
             <Header />
@@ -89,22 +88,31 @@ function PlayList() {
             ) : (
                 <div className="song-page flex flex-col gap-4">
                     <div className={`background-cover  flex flex-row items-end  p-4 pt-20 ${theme} `}>
-                        <div className="song-detail flex flex-row gap-2 z-10">
-                            <div className="thumbnail-container flex items-end">
-                                <img className="rounded-md  object-contain" src={playList.thumbnail} alt="thumbnail" />
+                        <div className="playlist-detail flex flex-row gap-2 w-full  mb:flex-col mb:items-center mb:justify-center">
+                            <div className="thumbnail-container flex items-end ">
+                                <img
+                                    className="rounded-md max-h-56 aspect-square object-contain shadow-lg shadow-black mb:shadow-full"
+                                    src={playList.thumbnail}
+                                    alt="thumbnail"
+                                />
                             </div>
-                            <div className="song-infor flex flex-col font-extrabold ps-3 justify-end">
-                                <div className="text-sm">{playList.type === 'SONG' ? 'Bài hát' : 'PlayList'}</div>
+                            <div className="playlist-infor flex flex-col w-full font-extrabold ps-3 justify-end mb:items-start">
+                                <div className="text-sm mb:hidden">
+                                    {playList.type === 'SONG' ? 'Bài hát' : 'PlayList'}
+                                </div>
+                                <div className="-ms-1 cursor-default text-xl font-bold mt-2 hidden mb:block">
+                                    {playList.title}
+                                </div>
                                 <div
-                                    className="text -ms-1 cursor-default text-left mb-5"
-                                    style={{ fontSize: `${playList.title.length > 30 ? '3rem' : '6rem'}` }}
+                                    className=" -ms-1 cursor-default text-left mb-5 mb:hidden"
+                                    style={{ fontSize: `${playList.title.length > 30 ? '3rem' : '4rem'}` }}
                                 >
                                     {playList.title}
                                 </div>
                                 <div className="more-info flex flex-row text-sm gap-2 items-center">
                                     <div className="ava-artist">
                                         <img
-                                            className="size-8 rounded-full"
+                                            className="size-8 rounded-full mb:size-5"
                                             src={playList.artists[0].imageUrl}
                                             alt=""
                                         />
@@ -117,7 +125,7 @@ function PlayList() {
                         </div>
                     </div>
                     <div className="controler flex flex-row gap-4 px-4">
-                        <ButtonStream song={song[0]} size={14} />
+                        <ButtonStream song={song[0]} size={14} playList={song} />
                         <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white hover:scale-110">
                             <i className="bx bx-plus-circle text-4xl"></i>{' '}
                         </div>
@@ -125,7 +133,7 @@ function PlayList() {
                             <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
                         </div>
                     </div>
-                    <div className="song-container  flex flex-row justify-between mx-2 pe-4 items-center  h-14 text-light-gray border-b border-b-dark-gray">
+                    <div className="song-container  flex flex-row justify-between mx-2 pe-4 items-center  h-14 text-light-gray border-b border-b-dark-gray top-16       ">
                         <div className="left-container flex flex-row gap-2 items-center">
                             <div className="text-light-gray font-semibold px-3 text-md">#</div>
                             <div>Tiêu đề</div>
@@ -135,7 +143,9 @@ function PlayList() {
                             <i className="bx bx-time"></i>
                         </div>
                     </div>
-                    <SongList songList={song} numList={true} />
+                    <div className="px-2 ">
+                        <SongList songList={song} numList={true} mobile={true} />
+                    </div>
                     <div className="more-infor text-light-gray text-xs p-4">
                         <div>{formatDate(playList.dateModify)}</div>
                         <div>{playList.uploadBy.fullName}</div>

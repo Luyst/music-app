@@ -8,17 +8,17 @@ import ButtonStream from '~/components/ButtonStream';
 import Thumbnail from '~/components/Thumbnail';
 import TopShow from '~/components/TopShow';
 import MyInfor from '~/components/MyInfor';
-const listColor = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5'];
+const listColor = ['bg-1', 'bg-2', 'bg-4', 'bg-5', 'bg-6', 'bg-8', 'bg-7'];
 
 function Song() {
     const { key } = useParams();
     const [song, setSong] = useState();
     const [artists, setArtists] = useState([]);
-    const [error, setError] = useState(true);
-    const [theme, setTheme] = useState('');
     const [artistDetails, setArtistDetails] = useState([]);
-    const [loading, setLoading] = useState(true);
 
+    const [theme, setTheme] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(true);
     useEffect(() => {
         const fetchArtistSong = async (artistsKey) => {
             setLoading(true);
@@ -31,14 +31,13 @@ function Song() {
 
                 const details = await Promise.all(promises);
                 const filteredDetails = details.filter((item) => item.status !== 'error');
-                setArtistDetails(filteredDetails);
-                if (filteredDetails[0].status === 'success') {
+                if (filteredDetails.length > 0) {
+                    setArtistDetails(filteredDetails);
                     setLoading(false);
                     return;
                 }
+                setArtistDetails(['not found']);
                 setLoading(false);
-
-                setError(true);
             } catch (error) {
                 console.error('Error fetching artist details:', error);
             }
@@ -53,10 +52,10 @@ function Song() {
                     setArtists(songInfo.song.artists);
                     setError(false);
                     setLoading(false);
+
                     return;
                 }
                 setError(true);
-                setLoading(false);
             } catch (error) {
                 console.error('Error fetching song details:', error);
                 setError(true);
@@ -74,7 +73,7 @@ function Song() {
     }, [key, song, artists, artistDetails]);
     return (
         <div className="wrapper size-full ">
-            <Header />
+            <Header bg={theme} />
             {loading ? (
                 <div className="flex justify-center items-center">
                     <div className="lds-ring">
@@ -94,28 +93,40 @@ function Song() {
                 </div>
             ) : (
                 <div className="song-page flex flex-col gap-4">
-                    <div className={`background-cover  flex flex-row items-end  p-4 pt-20 ${theme} shadow-inner`}>
-                        <div className="song-detail flex flex-row gap-2 z-10">
-                            <div className="thumbnail-container flex items-end">
-                                <img className="rounded-md  object-contain" src={song.thumbnail} alt="thumbnail" />
+                    <div className={`background-cover  flex flex-row items-end  p-4 pt-20 ${theme} `}>
+                        <div className="song-detail flex flex-row gap-2 w-full  mb:flex-col mb:items-center mb:justify-center">
+                            <div className="thumbnail-container flex items-end ">
+                                <img
+                                    className="rounded-md max-h-56 aspect-square object-contain shadow-lg shadow-black mb:shadow-full"
+                                    src={song.thumbnail}
+                                    alt="thumbnail"
+                                />
                             </div>
-                            <div className="song-infor flex flex-col font-extrabold ps-3 justify-end">
-                                <div className="text-sm">{song.type === 'SONG' ? 'Bài hát' : 'PlayList'}</div>
+                            <div className="song-infor flex flex-col w-full font-extrabold ps-3 justify-end mb:items-start">
+                                <div className="text-sm mb:hidden">{song.type === 'SONG' ? 'Bài hát' : 'PlayList'}</div>
+                                <div className=" -ms-1 cursor-default text-xl font-bold mt-2 hidden mb:block">
+                                    {song.title}
+                                </div>
                                 <div
-                                    className="text-8xl -ms-1 cursor-default text-left mb-5"
-                                    style={{ fontSize: `${song.title.length > 25 ? '3rem' : '5rem'}` }}
+                                    className=" -ms-1 cursor-default text-left mb-5 mb:hidden"
+                                    style={{ fontSize: `${song.title.length > 25 ? '3rem' : '4rem'}` }}
                                 >
                                     {song.title}
                                 </div>
-                                <div className="more-info flex flex-row text-sm gap-2 items-center">
+
+                                <div className="more-info flex flex-row text-sm gap-2 mb:text-md items-center">
                                     <div className="ava-artist">
-                                        <img className="size-8 rounded-full" src={song.artists[0].imageUrl} alt="" />
+                                        <img
+                                            className="size-8 rounded-full mb:size-5"
+                                            src={song.artists[0].imageUrl}
+                                            alt=""
+                                        />
                                     </div>
                                     <Link to={`/artist/${song.artists[0].shortLink}`}>
                                         <div className="main-artist">{song.artists[0].name}</div>
                                     </Link>
-                                    <div className="text-lg">∙</div>
-                                    <div>{song.duration}</div>
+                                    <div className="text-lg0 mb:hidden">∙</div>
+                                    <div className="mb:hidden">{song.duration}</div>
                                 </div>
                             </div>
                         </div>
@@ -129,14 +140,14 @@ function Song() {
                             <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
                         </div>
                     </div>
-                    <div className="px-4 ">
+                    <div className="px-4 mb:hidden">
                         {artists.map((artist) => (
                             <Link
-                                to={`/artist/${artist.shortLink}`}
+                                to={artist.shortLink && `/artist/${artist.shortLink}`}
                                 key={artist.shortLink}
                                 className="rounded-md song-container w-full flex flex-row justify-between p-2 pe-4 items-center   hover:bg-transparent"
                             >
-                                <Thumbnail item={artist} size="20" />
+                                <Thumbnail item={artist} size="20" mobile={true} />
                             </Link>
                         ))}
                     </div>
@@ -144,10 +155,10 @@ function Song() {
                         <div className="title mx-4 px-2 text-2xl font-bold py-4  border-b-2 border-b-dark-gray">
                             Đề xuất
                         </div>
-                        {artistDetails.length !== 0 && (
+                        {artistDetails[0] !== 'not found' && (
                             <>
                                 {artistDetails.map((artist, index) => (
-                                    <div key={index} className="song-list-each-artist px-4 py-4 *:my-3">
+                                    <div key={index} className="song-list-each-artist px-4 py-4 *:py-3">
                                         <div className="text-2xl font-bold">Bài nhạc của {artist.artist.name}</div>
                                         <SongList songList={artist.songNearly.slice(0, 5)} numList={true} />
                                         <button className="more text-sm hover:underline">Xem thêm</button>

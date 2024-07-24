@@ -7,7 +7,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StreamContext } from '~/context/Streaming';
 import MusicWave from '../MusicWave';
 
-function SongList({ songList, artistsShow = false, numList = false }) {
+function SongList({ songList, artistsShow = false, numList = false, duration = true }) {
     const { setStream, currentStream, audioRef } = useContext(StreamContext);
     const [streamPlaying, setStreamPlaying] = useState(false);
     const playSong = async (keysong) => {
@@ -23,42 +23,45 @@ function SongList({ songList, artistsShow = false, numList = false }) {
                 console.error('Error fetching song:', error);
             }
         }
-        if (currentStream.key === keysong) {
+        if (audioRef && currentStream.key === keysong) {
             if (audioRef.current.paused) {
                 audioRef.current.play();
                 setStreamPlaying(true);
 
                 return;
+            } else {
+                audioRef.current.pause();
+                setStreamPlaying(false);
             }
-            audioRef.current.pause();
-            setStreamPlaying(false);
         }
     };
     useEffect(() => {
-        const audioElement = audioRef.current;
-        if (!audioElement) return;
+        if (audioRef) {
+            const audioElement = audioRef.current;
+            if (!audioElement) return;
 
-        const handlePlay = () => {
-            setStreamPlaying(true);
-        };
+            const handlePlay = () => {
+                setStreamPlaying(true);
+            };
 
-        const handlePause = () => {
-            setStreamPlaying(false);
-        };
+            const handlePause = () => {
+                setStreamPlaying(false);
+            };
 
-        audioElement.addEventListener('play', handlePlay);
-        audioElement.addEventListener('pause', handlePause);
+            audioElement.addEventListener('play', handlePlay);
+            audioElement.addEventListener('pause', handlePause);
 
-        // Clean up event listeners on unmount or when dependencies change
-        return () => {
-            if (audioElement) {
-                audioElement.removeEventListener('play', handlePlay);
-                audioElement.removeEventListener('pause', handlePause);
-            }
-        };
+            // Clean up event listeners on unmount or when dependencies change
+            return () => {
+                if (audioElement) {
+                    audioElement.removeEventListener('play', handlePlay);
+                    audioElement.removeEventListener('pause', handlePause);
+                }
+            };
+        }
     }, [audioRef]);
     useEffect(() => {
-        if (!audioRef.current.paused) {
+        if (audioRef.current && !audioRef.current.paused) {
             setStreamPlaying(true);
         }
     }, []);
@@ -67,40 +70,39 @@ function SongList({ songList, artistsShow = false, numList = false }) {
             {songList.map((song, index) => (
                 <div
                     key={song.key}
-                    className={`rounded-md song-container w-full flex flex-row justify-between p-2 pe-4 items-center group h-14  hover:bg-transparent ${
-                        currentStream.key === song.key ? 'text-teal' : 'text-light-gray'
+                    className={`rounded-md song-container w-full flex flex-row justify-between px-2 pe-2 items-center group h-14 mb:p-0  hover:bg-transparent ${
+                        currentStream && currentStream.key === song.key ? 'text-teal' : 'text-light-gray'
                     }`}
                     onDoubleClick={() => playSong(song.key)}
                 >
-                    <div className="left-container flex flex-row gap-2 items-center w-2/5">
+                    <div className=" flex flex-row gap-2 items-center w-full ">
                         {numList && (
                             <div>
-                                {currentStream.key === song.key && streamPlaying ? (
-                                    <React.Fragment>
-                                        <div className=" font-semibold px-3 w-10  text-md group-hover:hidden">
+                                {currentStream && currentStream.key === song.key && streamPlaying ? (
+                                    <div className="mb:hidden">
+                                        <div className=" font-semibold px-3 w-10  text-md group-hover:hidden ">
                                             <MusicWave />
                                         </div>
-                                        <div className=" font-semibold px-1 w-10  text-3xl hidden group-hover:block">
+                                        <div className=" font-semibold px-1 w-10  text-3xl hidden group-hover:block ">
                                             <i className="bx bx-pause " onClick={() => playSong(song.key)}></i>
                                         </div>
-                                    </React.Fragment>
+                                    </div>
                                 ) : (
-                                    <React.Fragment>
+                                    <div className="mb:hidden">
                                         <div className=" font-semibold px-3 w-10  text-md group-hover:hidden">
                                             {index + 1}
                                         </div>
-                                        <div className=" font-semibold px-2 w-10  text-2xl hidden group-hover:block">
+                                        <div className=" font-semibold px-2 w-10  text-2xl hidden group-hover:block ">
                                             <i className="bx bx-play" onClick={() => playSong(song.key)}></i>
                                         </div>
-                                    </React.Fragment>
+                                    </div>
                                 )}
                             </div>
                         )}
-
                         <Thumbnail item={song} size={12} />
                     </div>
 
-                    <div className="duration">{song.duration}</div>
+                    {duration && <div className="duration mb:hidden">{song.duration}</div>}
                 </div>
             ))}
         </>

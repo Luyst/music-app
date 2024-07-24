@@ -8,7 +8,7 @@ import TopShow from '~/components/TopShow';
 import ButtonStream from '~/components/ButtonStream';
 import MyInfor from '~/components/MyInfor';
 
-const listColor = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5', 'bg-6', 'bg-7', 'bg-8'];
+const listColor = ['bg-1', 'bg-2', 'bg-4', 'bg-5', 'bg-6', 'bg-8', 'bg-7'];
 
 function Artist() {
     const { key } = useParams();

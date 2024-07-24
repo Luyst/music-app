@@ -70,12 +70,14 @@ function Topic() {
             ) : (
                 <div className="topic-page flex flex-col gap-4">
                     <div
-                        className={` flex flex-col justify-end min-h-80  bg-cover bg-no-repeat  ${theme} aspect-video bg-no-repeat`}
-                        style={{ background: `url(${topic.coverImageURL})` }}
-                    ></div>
-                    <div className="text-lg mt-2">{topic.description}</div>
-                    <div className="title">{topic.title}</div>
-                    <div className="playlist-list grid grid-cols-4 md:grid-cols-3 mb:grid-cols-2">
+                        className={`flex flex-col relative justify-center items-center bg-cover  bg-no-repeat mb:min-h-80 ${theme} mb:bg-none`}
+                    >
+                        <img src={topic.coverImageURL} alt="background" className="mb:hidden" />
+                    </div>
+
+                    <div className="text-md mt-2 px-4 py-2 ">{topic.description}</div>
+                    <div className="title px-4 text-3xl font-bold">{topic.title}</div>
+                    <div className="playlist-list grid grid-cols-4 md:grid-cols-3 mb:grid-cols-2 px-4">
                         {playlists.map((playlist) => (
                             <Link
                                 to={`/playlist/${playlist.key}`}

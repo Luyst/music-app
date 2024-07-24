@@ -55,12 +55,16 @@ function Home() {
                     </div>
                     <TopShow TopShow={newRelease} title="Nhạc mới nè !!" />
                     <TopShow TopShow={topSong} title="Nhạc hay lắm !!" />
+                    {topicEvent.map((topicE, index) => (
+                        <TopShow
+                            key={index + 'topshowhome'}
+                            TopShow={topicE.listPlaylist}
+                            title={topicE.groupName.split('_')[0]}
+                        />
+                    ))}
+                    <TopShow TopShow={topic} title="Chủ đề Hot!" />
 
                     <TopShow TopShow={top100} title="Top 100" />
-                    <TopShow TopShow={topic} title="Chủ đề Hot!" />
-                    {topicEvent.map((topicE) => (
-                        <TopShow TopShow={topicE.listPlaylist} title={topicE.groupName.split('_')[0]} />
-                    ))}
                 </>
             )}
         </div>

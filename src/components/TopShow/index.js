@@ -19,8 +19,8 @@ function TopShow({ TopShow, title }) {
                     hidden ? '' : 'h-auto'
                 }`}
             >
-                {TopShow.map((item) => (
-                    <Link key={item.key} to={`/${item.type ? item.type.toLowerCase() : 'topic'}/${item.key}`}>
+                {TopShow.map((item, index) => (
+                    <Link key={item.key + index} to={`/${item.type ? item.type.toLowerCase() : 'topic'}/${item.key}`}>
                         <div className="flex flex-col gap-2 p-4 rounded-lg card w-full  snap-center  hover:bg-transparent group mb:p-2">
                             <div className="  thumbnail overflow-hidden rounded-lg relative group size-40  ">
                                 <img

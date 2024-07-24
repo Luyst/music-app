@@ -22,7 +22,7 @@ module.exports = {
             },
         },
         colors: {
-            transparent: 'rgba(255,255,255,0.1)',
+            transparent: 'rgba(145,145,145,0.5)',
             white: '#fff',
 
             black: '#001214',
@@ -39,8 +39,8 @@ module.exports = {
             'primary-color': '#043F4E',
             'secondary-color': '#065E74',
             'text-secondary': '#D6FBFF',
-            'primary-bg': '#001214',
-            'secondary-bg': '#061923',
+            'primary-bg': '#000',
+            'secondary-bg': 'rgba(18, 18, 23)',
             'footer-bg': '#0b1727',
         },
         screens: {
