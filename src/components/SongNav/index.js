@@ -44,7 +44,7 @@ function SongNav({ audioRef }) {
     ];
 
     return (
-        <div className="song-nav flex items-center justify-end  text-xl gap-4 text-light-gray cursor-pointer">
+        <div className="song-nav flex items-center justify-end  text-xl gap-4 text-light-gray *:cursor-pointer">
             {currentStream && (
                 <React.Fragment>
                     {iconButtons.map(({ type, icon }) => (

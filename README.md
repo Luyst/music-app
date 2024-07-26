@@ -1,4 +1,4 @@
-<h1 align="center" style="font-size: 50px">Spotify Clone<h1/>
+<h1 align="center" style="font-size: 46x">Spotify Clone<h1/>
 
 # [Demo](https://luyst-spotify-clone.netlify.app/)
 

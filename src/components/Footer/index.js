@@ -87,7 +87,10 @@ function Footer({ audio }) {
             }
 
             <div className="nav mobile duration-300 ease-in-out">
-                <ul className="sidebar-header flex flex-row  justify-between rounded-lg h-full">
+                <ul
+                    className="sidebar-header flex flex-row px-2 pt-1
+                 justify-between w-full rounded-lg h-full"
+                >
                     <li>
                         <Link to="/" className="hover:text-primary-color flex flex-col  items-center">
                             {Icons.home}
@@ -101,15 +104,15 @@ function Footer({ audio }) {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/" className="hover:text-primary-color flex flex-col  items-center">
-                            {Icons.home}
-                            <span className="text-xs">Trang chủ</span>
+                        <Link to="/collection" className="hover:text-primary-color flex flex-col items-center">
+                            {Icons.library}
+                            <span className="text-xs">Thư viện</span>
                         </Link>
                     </li>
                     <li>
-                        <Link to="/search" className="hover:text-primary-color flex flex-col items-center">
-                            {Icons.library}
-                            <span className="text-xs">Thư viện</span>
+                        <Link to="/support" className="hover:text-primary-color flex flex-col  items-center">
+                            <i className="bx bx-support text-2xl"></i>
+                            <span className="text-xs">Hỗ trợ</span>
                         </Link>
                     </li>
                 </ul>

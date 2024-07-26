@@ -27,9 +27,22 @@ function UserProvider({ children }) {
                 setUser(null);
             }
         };
+        const userChange = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                if (!user || user.uid !== firebaseUser.uid) {
+                    fetchUserData(firebaseUser.uid);
+                }
+                if (user !== null) {
+                }
+            } else {
+                setUser(null);
+                localStorage.removeItem('user');
+            }
+        });
+        return () => userChange();
     }, [user]);
 
-    return <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>;
+    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 }
 
 export default UserProvider;

@@ -59,7 +59,7 @@ function Search() {
     }, [key]);
     return (
         <>
-            <Header notSearch={false} />
+            <Header notSearch={false} mobilePage={'Tìm kiếm'} />
             {loading ? (
                 <div className="flex justify-center items-center">
                     <div className="lds-ring">

@@ -55,7 +55,7 @@ function Header({ notSearch = true, mobilePage = String, bg }) {
         <React.Fragment>
             <header
                 className={`wrapper flex flex-row  items-center justify-between sticky pt-4 px-2 top-0 z-50 w-full  
-                 ${bg ? 'header-' + bg : 'bg-black '}   pb-2 mb:hidden`}
+                ${bg ? 'header-' + bg : 'bg-black '}   pb-2 mb:hidden`}
             >
                 <div className="control flex flex-row text-3xl gap-4  items-center *:text-light-gray">
                     <div
@@ -117,11 +117,29 @@ function Header({ notSearch = true, mobilePage = String, bg }) {
                     )}
                 </div>
             </header>
-            <header className="mobile  top-0 h-16 w-full flex-row fixed items-center justify-between px-4">
-                <div className="goback-button">
+            {mobilePage ? (
+                <React.Fragment>
+                    <div className="  text-white w-dvw  py-2 flex flex-col text-2xl   justify-between font-semibold border-none bg-black  px-4">
+                        <div className="">{mobilePage}</div>
+                    </div>
+                    <div
+                        className={`w-full flex flex-row overflow-hidden py-2 sticky px-4 bg-black top-0 group search-container min-w-96 text-sm z-50
+                            ${notSearch && 'hidden'}`}
+                    >
+                        <input
+                            onChange={(e) => onSearchChange(e)}
+                            className="mobile rounded-md w-full text-black p-3 px-3 group-focus-within:text-black group-hover:text-black
+                            bg-white  focus:outline-none font-medium"
+                            name="search-input"
+                            id="search-input"
+                        />
+                    </div>
+                </React.Fragment>
+            ) : (
+                <div className="goback-button px-4">
                     <i class="bx bx-chevron-left text-4xl aspect-square rounded-full z-50 "></i>
                 </div>
-            </header>
+            )}
         </React.Fragment>
     );
 }

@@ -1,5 +1,5 @@
 import nct from 'nhaccuatui-api-full';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import Header from '~/components/Header';
@@ -8,10 +8,13 @@ import ButtonStream from '~/components/ButtonStream';
 
 import MyInfor from '~/components/MyInfor';
 import Tooltip from '~/components/Tooltip';
+import { updateDocument } from '~/services/service';
+import { UserContext } from '~/context/UserProvider';
 
 const listColor = ['bg-1', 'bg-2', 'bg-4', 'bg-5', 'bg-6', 'bg-8', 'bg-7'];
 
 function PlayList() {
+    const { user, setUser } = useContext(UserContext);
     const { playlistKey } = useParams();
     const [playList, setPlayList] = useState([]);
     const [song, setSong] = useState();
@@ -19,11 +22,66 @@ function PlayList() {
     const [theme, setTheme] = useState('');
     const [error, setError] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [isSaved, setIsSaved] = useState(user ? user.playlistSaved.some((save) => save.key === playList.key) : false);
     const formatDate = (dateString) => {
         const [day, month, year] = dateString.split('/');
 
         return `${day} tháng ${month}, ${year}`;
     };
+
+    const addPLaylist = async () => {
+        if (user.playlistSaved) {
+            if (user.playlistSaved.some((save) => save.key === playList.key)) {
+                // Tạo mảng mới không có playlistkey
+                const updatedPlaylists = user.playlistSaved.filter((save) => save.key !== playList.key);
+                console.log(updatedPlaylists);
+                await updateDocument('user', user.uid, {
+                    playlistSaved: updatedPlaylists,
+                });
+                const tempUser = JSON.parse(localStorage.getItem('user'));
+                tempUser.playlistSaved = updatedPlaylists;
+                localStorage.setItem('user', JSON.stringify(tempUser));
+                setUser(tempUser);
+                setIsSaved(false);
+                return;
+            } else {
+                // Thêm playlistKey vào mảng
+                const saved = {
+                    key: playList.key,
+                    thumbnail: playList.thumbnail,
+                    title: playList.title,
+                    type: playList.type,
+                    uploadBy: playList.uploadBy.userName,
+                };
+                await updateDocument('user', user.uid, {
+                    playlistSaved: [saved, ...user.playlistSaved],
+                });
+                const tempUser = JSON.parse(localStorage.getItem('user'));
+                tempUser.playlistSaved = [saved, ...user.playlistSaved];
+                localStorage.setItem('user', JSON.stringify(tempUser));
+                setUser(tempUser);
+            }
+        } else {
+            // Nếu playlistSaved chưa tồn tại, tạo mảng
+            const saved = {
+                key: playList.key,
+                thumbnail: playList.thumbnail,
+                title: playList.title,
+                type: playList.type,
+                uploadBy: playList.uploadBy.userName,
+            };
+            await updateDocument('user', user.uid, {
+                playlistSaved: [saved],
+            });
+            const tempUser = JSON.parse(localStorage.getItem('user'));
+            tempUser.playlistSaved = [saved];
+            localStorage.setItem('user', JSON.stringify(tempUser));
+            setUser(tempUser);
+        }
+
+        setIsSaved(true);
+    };
+
     useEffect(() => {
         const fetchPlayList = async (playlistKey) => {
             setLoading(true);
@@ -33,7 +91,6 @@ function PlayList() {
                 if (playList.status === 'success') {
                     setPlayList(playList.playlist);
                     setSong(playList.playlist.songs);
-
                     setError(false);
                     return;
                 }
@@ -52,6 +109,7 @@ function PlayList() {
             setTheme(color);
         }
     }, [playlistKey, playList]);
+
     return (
         <div className="wrapper size-full ">
             <Header />
@@ -126,8 +184,15 @@ function PlayList() {
                     </div>
                     <div className="controler flex flex-row gap-4 px-4">
                         <ButtonStream song={song[0]} size={14} playList={song} />
-                        <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white hover:scale-110">
-                            <i className="bx bx-plus-circle text-4xl"></i>{' '}
+                        <div
+                            className=" flex justify-center items-center rounded-full  text-text-secondary hover:text-white hover:scale-110"
+                            onClick={() => addPLaylist()}
+                        >
+                            {isSaved ? (
+                                <i class="bx bxs-check-circle text-4xl"></i>
+                            ) : (
+                                <i className="bx bx-plus-circle text-4xl"></i>
+                            )}
                         </div>
                         <div className=" flex justify-center items-center rounded-full text-text-secondary hover:text-white  hover:scale-110">
                             <i className="bx bx-dots-horizontal-rounded text-4xl"></i>{' '}
