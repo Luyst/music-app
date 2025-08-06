@@ -13,34 +13,47 @@ function UserProvider({ children }) {
 
     useEffect(() => {
         const fetchUserData = async (uid) => {
-            const condition = {
-                fieldName: 'uid',
-                operator: '==',
-                compareValue: uid,
-            };
-            const users = await queryForDocuments('user', condition);
-            if (users.length > 0) {
-                const fetchedUser = users[0];
-                setUser(fetchedUser);
-                localStorage.setItem('user', JSON.stringify(fetchedUser));
-            } else {
-                setUser(null);
+            try {
+                const condition = {
+                    fieldName: 'uid',
+                    operator: '==',
+                    compareValue: uid,
+                };
+                const users = await queryForDocuments('user', condition);
+
+                if (users.length > 0) {
+                    const fetchedUser = users[0];
+                    setUser(fetchedUser);
+                    localStorage.setItem('user', JSON.stringify(fetchedUser));
+                } else {
+                    // Nếu chưa có trong Firestore thì tạo user mới
+                    setUser((prev) => ({ ...prev, uid })); // giữ tạm firebase user
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
             }
         };
-        const userChange = onAuthStateChanged(auth, (firebaseUser) => {
+
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             if (firebaseUser) {
-                if (!user || user.uid !== firebaseUser.uid) {
-                    fetchUserData(firebaseUser.uid);
-                }
-                if (user !== null) {
-                }
+                // 👉 Cập nhật ngay UI bằng firebaseUser
+                setUser({
+                    uid: firebaseUser.uid,
+                    displayName: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                    photoURL: firebaseUser.photoURL,
+                });
+
+                // Sau đó fetch Firestore để sync thông tin
+                fetchUserData(firebaseUser.uid);
             } else {
                 setUser(null);
                 localStorage.removeItem('user');
             }
         });
-        return () => userChange();
-    }, [user]);
+
+        return () => unsubscribe();
+    }, []);
 
     return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 }

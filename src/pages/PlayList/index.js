@@ -16,13 +16,15 @@ const listColor = ['bg-1', 'bg-2', 'bg-4', 'bg-5', 'bg-6', 'bg-8', 'bg-7'];
 function PlayList() {
     const { user, setUser } = useContext(UserContext);
     const { playlistKey } = useParams();
-    const [playList, setPlayList] = useState([]);
-    const [song, setSong] = useState();
+    const [playListShow, setPlayListShow] = useState([]);
+    const [song, setSong] = useState([]);
 
     const [theme, setTheme] = useState('');
     const [error, setError] = useState(true);
     const [loading, setLoading] = useState(true);
-    const [isSaved, setIsSaved] = useState(user ? user.playlistSaved.some((save) => save.key === playList.key) : false);
+    const [isSaved, setIsSaved] = useState(
+        () => user?.playlistSaved?.some((save) => save.key === playListShow.key) ?? false,
+    );
     const formatDate = (dateString) => {
         const [day, month, year] = dateString.split('/');
 
@@ -31,9 +33,9 @@ function PlayList() {
 
     const addPLaylist = async () => {
         if (user.playlistSaved) {
-            if (user.playlistSaved.some((save) => save.key === playList.key)) {
+            if (user.playlistSaved.some((save) => save.key === playListShow.key)) {
                 // Tạo mảng mới không có playlistkey
-                const updatedPlaylists = user.playlistSaved.filter((save) => save.key !== playList.key);
+                const updatedPlaylists = user.playlistSaved.filter((save) => save.key !== playListShow.key);
                 console.log(updatedPlaylists);
                 await updateDocument('user', user.uid, {
                     playlistSaved: updatedPlaylists,
@@ -47,11 +49,11 @@ function PlayList() {
             } else {
                 // Thêm playlistKey vào mảng
                 const saved = {
-                    key: playList.key,
-                    thumbnail: playList.thumbnail,
-                    title: playList.title,
-                    type: playList.type,
-                    uploadBy: playList.uploadBy.userName,
+                    key: playListShow.key,
+                    thumbnail: playListShow.thumbnail,
+                    title: playListShow.title,
+                    type: playListShow.type,
+                    uploadBy: playListShow.uploadBy.userName,
                 };
                 await updateDocument('user', user.uid, {
                     playlistSaved: [saved, ...user.playlistSaved],
@@ -64,11 +66,11 @@ function PlayList() {
         } else {
             // Nếu playlistSaved chưa tồn tại, tạo mảng
             const saved = {
-                key: playList.key,
-                thumbnail: playList.thumbnail,
-                title: playList.title,
-                type: playList.type,
-                uploadBy: playList.uploadBy.userName,
+                key: playListShow.key,
+                thumbnail: playListShow.thumbnail,
+                title: playListShow.title,
+                type: playListShow.type,
+                uploadBy: playListShow.uploadBy.userName,
             };
             await updateDocument('user', user.uid, {
                 playlistSaved: [saved],
@@ -87,10 +89,10 @@ function PlayList() {
             setLoading(true);
             try {
                 if (!playlistKey) return;
-                const playList = await nct.getPlaylistDetail(playlistKey);
-                if (playList.status === 'success') {
-                    setPlayList(playList.playlist);
-                    setSong(playList.playlist.songs);
+                const playListShow = await nct.getPlaylistDetail(playlistKey);
+                if (playListShow.status === 'success') {
+                    setPlayListShow(playListShow.playlist);
+                    setSong(playListShow.playlist.songs);
                     setError(false);
                     return;
                 }
@@ -103,12 +105,12 @@ function PlayList() {
             }
         };
 
-        if (!playList || playList.key !== playlistKey) {
+        if (!playListShow || playListShow.key !== playlistKey) {
             fetchPlayList(playlistKey);
             const color = listColor[Math.floor(Math.random() * listColor.length)];
             setTheme(color);
         }
-    }, [playlistKey, playList]);
+    }, [playlistKey, playListShow]);
 
     return (
         <div className="wrapper size-full ">
@@ -150,33 +152,33 @@ function PlayList() {
                             <div className="thumbnail-container flex items-end ">
                                 <img
                                     className="rounded-md max-h-56 aspect-square object-contain shadow-lg shadow-black mb:shadow-full"
-                                    src={playList.thumbnail}
+                                    src={playListShow.thumbnail}
                                     alt="thumbnail"
                                 />
                             </div>
                             <div className="playlist-infor flex flex-col w-full font-extrabold ps-3 justify-end mb:items-start">
                                 <div className="text-sm mb:hidden">
-                                    {playList.type === 'SONG' ? 'Bài hát' : 'PlayList'}
+                                    {playListShow.type === 'SONG' ? 'Bài hát' : 'PlayList'}
                                 </div>
                                 <div className="-ms-1 cursor-default text-xl font-bold mt-2 hidden mb:block">
-                                    {playList.title}
+                                    {playListShow.title}
                                 </div>
                                 <div
                                     className=" -ms-1 cursor-default text-left mb-5 mb:hidden"
-                                    style={{ fontSize: `${playList.title.length > 30 ? '3rem' : '4rem'}` }}
+                                    style={{ fontSize: `${playListShow.title.length > 30 ? '3rem' : '4rem'}` }}
                                 >
-                                    {playList.title}
+                                    {playListShow.title}
                                 </div>
                                 <div className="more-info flex flex-row text-sm gap-2 items-center">
                                     <div className="ava-artist">
                                         <img
                                             className="size-8 rounded-full mb:size-5"
-                                            src={playList.artists[0].imageUrl}
+                                            src={playListShow.artists[0].imageUrl}
                                             alt=""
                                         />
                                     </div>
-                                    <Link to={`/artist/${playList.artists[0].shortLink}`}>
-                                        <div className="main-artist">{playList.artists[0].name}</div>
+                                    <Link to={`/artist/${playListShow.artists[0].shortLink}`}>
+                                        <div className="main-artist">{playListShow.artists[0].name}</div>
                                     </Link>
                                 </div>
                             </div>
@@ -212,8 +214,8 @@ function PlayList() {
                         <SongList songList={song} numList={true} mobile={true} />
                     </div>
                     <div className="more-infor text-light-gray text-xs p-4">
-                        <div>{formatDate(playList.dateModify)}</div>
-                        <div>{playList.uploadBy.fullName}</div>
+                        <div>{formatDate(playListShow.dateModify)}</div>
+                        <div>{playListShow.uploadBy.fullName}</div>
                     </div>
                     <MyInfor />
                 </div>

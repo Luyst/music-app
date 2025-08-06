@@ -5,7 +5,7 @@ import { StreamContext } from '~/context/Streaming';
 
 function StreamPlaylist() {
     const playList = JSON.parse(localStorage.getItem('playlistShow'));
-    const { currentStream, StreamPlaylist } = useContext(StreamContext);
+    const { currentStream } = useContext(StreamContext);
     return (
         <div className="wrapper-playlist flex flex-col gap-8 ">
             <div className="title text-md font-bold">Danh sách chờ</div>

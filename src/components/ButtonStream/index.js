@@ -34,6 +34,9 @@ function ButtonStream({ song, size, playList }) {
                 setIsPlaying(false);
             }
         }
+
+        console.log('playPause', song);
+        console.log('currentPlaylist', playList);
     };
     useEffect(() => {
         const audioElement = audioRef.current;

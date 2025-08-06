@@ -10,7 +10,10 @@ function DefaultLayout({ children }) {
         <div className="flex flex-col   h-dvh  ">
             <div className="content-container p-2 grow flex flex-row justify-start gap-2  w-full overflow-hidden mb:p-0 ">
                 <Sidebar />
-                <div id="main-content" className="w-full bg-secondary-bg rounded-lg overflow-y-scroll">
+                <div
+                    id="main-content"
+                    className="w-full bg-secondary-bg rounded-lg overflow-y-scroll overflow-x-hidden"
+                >
                     <main className="">{children}</main>
                     <div className="mobile bg-secondary-bg w-full h-40"></div>
                 </div>{' '}
